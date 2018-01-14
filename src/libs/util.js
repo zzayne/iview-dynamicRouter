@@ -12,7 +12,7 @@ util.title = function (title) {
 };
 
 const ajaxUrl = env === 'development'
-    ? 'http://localhost:8080/src/data'
+    ? '/src/data'
     : env === 'production'
         ? 'https://www.url.com'
         : 'https://debug.url.com';
