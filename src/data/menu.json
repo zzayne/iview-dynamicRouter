@@ -1,0 +1,47 @@
+[
+  {
+    "path": "/groupOne",
+    "icon": "ios-folder",
+    "name": "system_index",
+    "title": "groupOne",
+    "component": "Main",
+    "children": [
+      {
+        "path": "pageOne",
+        "icon": "ios-paper-outline",
+        "name": "pageOne",
+        "title": "pageOne",
+        "component": "group/page1/page1"
+      },
+      {
+        "path": "pageTwo",
+        "icon": "ios-paper-outline",
+        "name": "pageTwo",
+        "title": "pageTwo",
+        "component": "group/page2/page2"
+      },
+      {
+        "path": "pageThere",
+        "icon": "ios-paper-outline",
+        "name": "pageThere",
+        "title": "pageThere",
+        "component": "group/page3/page3"
+      }
+    ]
+  },
+  {
+    "path": "/groupTwo",
+    "icon": "ios-paper",
+    "title": "groupTwo",
+    "name": "other",
+    "component": "Main",
+    "children": [
+      {
+        "path": "pageFour",
+        "title": "Page",
+        "name": "pageFour",
+        "component": "page/page4"
+      }
+    ]
+  }
+]

@@ -2,7 +2,7 @@ import axios from 'axios';
 import env from '../../build/env';
 import semver from 'semver';
 import packjson from '../../package.json';
-
+import lazyLoading from './lazyLoading';
 let util = {
 
 };
@@ -12,10 +12,10 @@ util.title = function (title) {
 };
 
 const ajaxUrl = env === 'development'
-    ? 'http://127.0.0.1:8888'
+    ? 'http://localhost:8080/src/data'
     : env === 'production'
-    ? 'https://www.url.com'
-    : 'https://debug.url.com';
+        ? 'https://www.url.com'
+        : 'https://debug.url.com';
 
 util.ajax = axios.create({
     baseURL: ajaxUrl,
@@ -266,6 +266,48 @@ util.checkUpdate = function (vm) {
             });
         }
     });
+};
+
+util.initRouter = function (vm) {
+    const constRoutes = [];
+    const otherRoutes = [];
+
+    // 404路由需要和动态路由一起注入
+    const otherRouter = [{
+        path: '/*',
+        name: 'error-404',
+        meta: {
+            title: '404-页面不存在'
+        },
+        component: 'error-page/404'
+    }];
+    // 模拟异步请求
+    util.ajax('menu.json').then(res => {
+        var menuData = res.data;
+        util.initRouterNode(constRoutes, menuData);
+        util.initRouterNode(otherRoutes, otherRouter);
+        // 添加主界面路由
+        vm.$store.commit('updateAppRouter', constRoutes.filter(item => item.children.length > 0));
+        // 添加全局路由
+        vm.$store.commit('updateDefaultRouter', otherRoutes);
+        // 刷新界面菜单
+        vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
+    });
+};
+
+util.initRouterNode = function (routers, data) {
+    for (var item of data) {
+        let menu = Object.assign({}, item);
+        menu.component = lazyLoading(menu.component);
+
+        if (item.children && item.children.length > 0) {
+            menu.children = [];
+            util.initRouterNode(menu.children, item.children);
+        }
+        // 给页面添加标题
+        menu.meta = { title: menu.title };
+        routers.push(menu);
+    }
 };
 
 export default util;
