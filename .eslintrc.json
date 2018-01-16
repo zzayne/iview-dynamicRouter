@@ -4,7 +4,8 @@
     "root": true,
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module"
+        "sourceType": "module",
+        "allowImportExportEverywhere": true
     },
     "env": {
         "browser": true,
