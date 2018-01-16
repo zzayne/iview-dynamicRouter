@@ -1,1 +1,2 @@
-export default (url) => resolve => { require([`@/views/${url}.vue`], resolve); };
+// export default (url) => resolve => { require([`@/views/${url}.vue`], resolve); };
+export default (url) => {import(`@/views/${url}.vue`)};
