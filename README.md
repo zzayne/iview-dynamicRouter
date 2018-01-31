@@ -111,4 +111,4 @@ updateMenulist (state, routes) {
 
 ### 与我联系
 
-QQ：78552168
+Email:thezhangwen@outlook.com
