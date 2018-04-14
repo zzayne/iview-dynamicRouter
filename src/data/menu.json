@@ -11,14 +11,16 @@
         "icon": "ios-paper-outline",
         "name": "pageOne",
         "title": "pageOne",
-        "component": "group/page1/page1"
+        "component": "group/page1/page1",
+        "permission":["del"]
       },
       {
         "path": "pageTwo",
         "icon": "ios-paper-outline",
         "name": "pageTwo",
         "title": "pageTwo",
-        "component": "group/page2/page2"
+        "component": "group/page2/page2",
+        "permission":["add","del"]
       },
       {
         "path": "pageThere",
