@@ -6,6 +6,7 @@
         <div class="sidebar-menu-con" :style="{width: shrink?'60px':'200px', overflow: shrink ? 'visible' : 'auto'}">
             <shrinkable-menu 
                 :shrink="shrink"
+                :open-names="openedSubmenuArr"
                 :menu-list="menuList">
                 <div slot="top" class="logo-con">
                     <img v-show="!shrink"  src="../images/logo.jpg" key="max-logo" />
@@ -19,6 +20,11 @@
                     <Button :style="{transform: 'rotateZ(' + (this.shrink ? '-90' : '0') + 'deg)'}" type="text" @click="toggleClick">
                         <Icon type="navicon" size="32"></Icon>
                     </Button>
+                </div>
+                  <div class="header-middle-con">
+                    <div class="main-breadcrumb">
+                        <breadcrumb-nav :currentPath="currentPath"></breadcrumb-nav>
+                    </div>
                 </div>
                 <div class="header-avator-con">
                     <div class="user-dropdown-menu-con">
@@ -52,15 +58,18 @@
 import Cookies from 'js-cookie';
 import tagsPageOpened from './main-components/tags-page-opened.vue';
 import shrinkableMenu from './main-components/shrinkable-menu/shrinkable-menu.vue';
+import breadcrumbNav from './main-components/breadcrumb-nav.vue';
 import util from '@/libs/util.js';
 export default {
     components: {
         shrinkableMenu,
-        tagsPageOpened
+        tagsPageOpened,
+        breadcrumbNav
     },
     data () {
         return {
             shrink: false,
+            openedSubmenuArr: this.$store.state.app.openedSubmenuArr,
             userName: ''
         };
     },
@@ -68,9 +77,15 @@ export default {
         menuList () {
             return this.$store.state.app.menuList;
         },
-
+        currentPath () {
+            return this.$store.state.app.currentPath; // 当前面包屑数组
+        },
         pageTagsList () {
             return this.$store.state.app.pageOpenedList;
+        },
+
+        cachePage () {
+            return this.$store.state.app.cachePage;
         }
     },
     methods: {
