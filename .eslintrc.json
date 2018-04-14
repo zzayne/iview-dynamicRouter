@@ -1,16 +1,15 @@
 {
     "extends": "standard",
-    "installedESLint": true,
     "root": true,
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module",
-        "allowImportExportEverywhere": true
+        "sourceType": "module"
     },
     "env": {
         "browser": true,
         "node": true
     },
+    "parser": "babel-eslint",
     "plugins": [ "html", "standard" ],
     "rules": {
         "indent": ["error", 4, { "SwitchCase": 1 }],

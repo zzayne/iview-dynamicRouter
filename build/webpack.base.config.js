@@ -25,24 +25,24 @@ module.exports = {
                 loader: 'vue-loader',
                 options: {
                     loaders: {
-                        less: ExtractTextPlugin.extract({
-                            use: ['css-loader?minimize', 'autoprefixer-loader', 'less-loader'],
-                            fallback: 'vue-style-loader'
-                        }),
-                        css: ExtractTextPlugin.extract({
-                            use: ['css-loader', 'autoprefixer-loader'],
-                            fallback: 'vue-style-loader'
-                        })
+                        loaders: {
+                            css: 'vue-style-loader!css-loader',
+                            less: 'vue-style-loader!css-loader!less-loader'
+                        },
+                        postLoaders: {
+                            html: 'babel-loader'
+                        }
                     }
                 }
             },
             {
                 test: /iview\/.*?js$/,
-                loader: 'babel-loader'
+                loader: 'happypack/loader?id=happybabel',
+                exclude: /node_modules/
             },
             {
                 test: /\.js$/,
-                loader: 'babel-loader',
+                loader: 'happypack/loader?id=happybabel',
                 exclude: /node_modules/
             },
             {

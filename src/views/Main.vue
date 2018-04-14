@@ -37,6 +37,9 @@
                     </div>
                 </div>
             </div>
+             <div class="tags-con">
+                <tags-page-opened :pageTagsList="pageTagsList"></tags-page-opened>
+            </div>
         </div>
         <div class="single-page-con" :style="{left: shrink?'60px':'200px'}">
             <div class="single-page">
@@ -47,11 +50,13 @@
 </template>
 <script>
 import Cookies from 'js-cookie';
+import tagsPageOpened from './main-components/tags-page-opened.vue';
 import shrinkableMenu from './main-components/shrinkable-menu/shrinkable-menu.vue';
-
+import util from '@/libs/util.js';
 export default {
     components: {
-        shrinkableMenu
+        shrinkableMenu,
+        tagsPageOpened
     },
     data () {
         return {
@@ -62,10 +67,18 @@ export default {
     computed: {
         menuList () {
             return this.$store.state.app.menuList;
+        },
+
+        pageTagsList () {
+            return this.$store.state.app.pageOpenedList;
         }
     },
     methods: {
         init () {
+            let pathArr = util.setCurrentPath(this, this.$route.name);
+            if (pathArr.length >= 2) {
+                this.$store.commit('addOpenSubmenu', pathArr[1].name);
+            }
             this.userName = Cookies.get('user');
         },
         toggleClick () {
@@ -75,6 +88,26 @@ export default {
             this.$router.push({
                 name: 'login'
             });
+        },
+        checkTag (name) {
+            let openpageHasTag = this.pageTagsList.some(item => {
+                if (item.name === name) {
+                    return true;
+                }
+            });
+            if (!openpageHasTag) { //  解决关闭当前标签后再点击回退按钮会退到当前页时没有标签的问题
+                util.openNewPage(this, name, this.$route.params || {}, this.$route.query || {});
+            }
+        }
+    },
+    watch: {
+        $route (to) {
+            this.$store.commit('setCurrentPageName', to.name);
+            let pathArr = util.setCurrentPath(this, to.name);
+            if (pathArr.length > 2) {
+                this.$store.commit('addOpenSubmenu', pathArr[1].name);
+            }
+            localStorage.currentPageName = to.name;
         }
     },
     mounted () {

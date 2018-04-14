@@ -7,7 +7,7 @@ export const loginRouter = {
     meta: {
         title: 'Login - 登录'
     },
-    component: resolve => { require(['@/views/login.vue'], resolve); }
+    component: () => import('@/views/login.vue')
 };
 export const page403 = {
     path: '/403',
@@ -15,7 +15,7 @@ export const page403 = {
         title: '403-权限不足'
     },
     name: 'error-403',
-    component: resolve => { require(['@//views/error-page/403.vue'], resolve); }
+    component: () => import('@//views/error-page/403.vue')
 };
 
 export const page500 = {
@@ -24,7 +24,7 @@ export const page500 = {
         title: '500-服务端错误'
     },
     name: 'error-500',
-    component: resolve => { require(['@/views/error-page/500.vue'], resolve); }
+    component: () => import('@/views/error-page/500.vue')
 };
 
 // 作为Main组件的子页面展示但是不在左侧菜单显示的路由写在otherRouter里
@@ -33,7 +33,7 @@ export const otherRouter = {
     name: 'otherRouter',
     component: Main,
     children: [
-        { path: 'home', title: { i18n: 'home' }, name: 'home_index', component: resolve => { require(['@/views/home/home.vue'], resolve); } }
+        { path: 'home', title: { i18n: 'home' }, name: 'home_index', component: () => import('@/views/home/home.vue') }
     ]
 };
 

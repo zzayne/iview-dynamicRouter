@@ -1,8 +1,6 @@
 import axios from 'axios';
 import env from '../../build/env';
-import semver from 'semver';
-import packjson from '../../package.json';
-import lazyLoading from './lazyLoading';
+import lazyLoading from './lazyLoading.js';
 let util = {
 
 };
@@ -189,12 +187,16 @@ util.setCurrentPath = function (vm, name) {
 };
 
 util.openNewPage = function (vm, name, argu, query) {
+    if (vm.$store === undefined) {
+        return;
+    }
     let pageOpenedList = vm.$store.state.app.pageOpenedList;
+
     let openedPageLen = pageOpenedList.length;
     let i = 0;
     let tagHasOpened = false;
     while (i < openedPageLen) {
-        if (name === pageOpenedList[i].name) {  // 页面已经打开
+        if (name === pageOpenedList[i].name) { // 页面已经打开
             vm.$store.commit('pageOpenedList', {
                 index: i,
                 argu: argu,
@@ -205,9 +207,10 @@ util.openNewPage = function (vm, name, argu, query) {
         }
         i++;
     }
+
     if (!tagHasOpened) {
         let tag = vm.$store.state.app.tagsList.filter((item) => {
-            if (item.children) {
+            if (item.children && item.children.length > 0) {
                 return name === item.children[0].name;
             } else {
                 return name === item.name;
@@ -215,13 +218,14 @@ util.openNewPage = function (vm, name, argu, query) {
         });
         tag = tag[0];
         if (tag) {
-            tag = tag.children ? tag.children[0] : tag;
+            tag = tag.children && tag.children.length > 0 ? tag.children[0] : tag;
             if (argu) {
                 tag.argu = argu;
             }
             if (query) {
                 tag.query = query;
             }
+            console.log(tag);
             vm.$store.commit('increateTag', tag);
         }
     }
@@ -233,7 +237,7 @@ util.toDefaultPage = function (routers, name, route, next) {
     let i = 0;
     let notHandle = true;
     while (i < len) {
-        if (routers[i].name === name && routers[i].redirect === undefined) {
+        if (routers[i].name === name && routers[i].children && routers[i].redirect === undefined) {
             route.replace({
                 name: routers[i].children[0].name
             });
@@ -252,22 +256,6 @@ util.fullscreenEvent = function (vm) {
     // 权限菜单过滤相关
     vm.$store.commit('updateMenulist');
 };
-
-util.checkUpdate = function (vm) {
-    axios.get('https://api.github.com/repos/iview/iview-admin/releases/latest').then(res => {
-        let version = res.data.tag_name;
-        vm.$Notice.config({
-            duration: 0
-        });
-        if (semver.lt(packjson.version, version)) {
-            vm.$Notice.info({
-                title: 'iview-admin更新啦',
-                desc: '<p>iView-admin更新到了' + version + '了，去看看有哪些变化吧</p><a style="font-size:13px;" href="https://github.com/iview/iview-admin/releases" target="_blank">前往github查看</a>'
-            });
-        }
-    });
-};
-
 util.initRouter = function (vm) {
     const constRoutes = [];
     const otherRoutes = [];
@@ -292,20 +280,38 @@ util.initRouter = function (vm) {
         vm.$store.commit('updateDefaultRouter', otherRoutes);
         // 刷新界面菜单
         vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
+
+        let tagsList = [];
+
+        vm.$store.state.app.routers.map((item) => {
+            if (item.children.length <= 1) {
+                tagsList.push(item.children[0]);
+            } else {
+                tagsList.push(...item.children);
+            }
+        });
+        vm.$store.commit('setTagsList', tagsList);
     });
 };
 
+// 生成路由节点
 util.initRouterNode = function (routers, data) {
     for (var item of data) {
         let menu = Object.assign({}, item);
+        // menu.component = import(`@/views/${menu.component}.vue`);
         menu.component = lazyLoading(menu.component);
 
         if (item.children && item.children.length > 0) {
             menu.children = [];
             util.initRouterNode(menu.children, item.children);
         }
+        let meta = {};
         // 给页面添加标题
-        menu.meta = { title: menu.title };
+        meta.permission = menu.permission ? menu.permission : null;
+        meta.title = menu.title ? menu.title : null;
+
+        menu.meta = meta;
+
         routers.push(menu);
     }
 };

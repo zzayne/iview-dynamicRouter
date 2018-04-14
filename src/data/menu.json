@@ -38,7 +38,7 @@
     "children": [
       {
         "path": "pageFour",
-        "title": "Page",
+        "title": "PageFour",
         "name": "pageFour",
         "component": "page/page4"
       }
